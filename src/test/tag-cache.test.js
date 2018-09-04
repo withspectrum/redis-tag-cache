@@ -22,6 +22,13 @@ it('should get and set items', async () => {
   expect(await cache.get('a')).toEqual('data');
 });
 
+it('should get multiple items', async () => {
+  const cache = new TagCache();
+  await cache.set('a', 'data-a', ['some-tag']);
+  await cache.set('b', 'data-b', ['some-tag']);
+  expect(await cache.get('a', 'b')).toEqual(['data-a', 'data-b']);
+});
+
 it('should invalidate an item with a tag', async () => {
   const cache = new TagCache();
   await cache.set('a', 'data', ['tag-1']);
