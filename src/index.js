@@ -12,11 +12,17 @@ import Redis, { type RedisOptions } from 'ioredis';
 
 export type CacheData = ?mixed;
 
+export type Options = {
+  defaultTimeout?: number,
+};
+
 class TagCache {
   redis: Redis;
+  options: Options;
 
-  constructor(options: ?RedisOptions) {
-    this.redis = new Redis(options || {});
+  constructor(options?: Options = {}, ioredisOptions?: RedisOptions = {}) {
+    this.redis = new Redis(ioredisOptions);
+    this.options = options || {};
   }
 
   get = async (key: string): Promise<?CacheData> => {
@@ -49,7 +55,11 @@ class TagCache {
       });
 
       // Add the data to the key
-      multi.set(`data:${key}`, JSON.stringify(data));
+      if (typeof this.options.defaultTimeout === 'number') {
+        multi.set(`data:${key}`, JSON.stringify(data), 'ex', this.options.defaultTimeout);
+      } else {
+        multi.set(`data:${key}`, JSON.stringify(data));
+      }
       await multi.exec();
       return;
     } catch (err) {
