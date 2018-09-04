@@ -70,6 +70,12 @@ describe('data types', () => {
       { id: 'asdf-234' },
     ]);
   });
+
+  it('should handle strings that look like arrays', async () => {
+    const cache = new TagCache();
+    await cache.set('a', '["1"]', ['tag-1']);
+    expect(await cache.get('a')).toEqual('["1"]');
+  });
 });
 
 describe('options', () => {
