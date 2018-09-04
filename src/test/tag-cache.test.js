@@ -84,4 +84,27 @@ describe('options', () => {
       expect(set).toHaveBeenCalledWith('data:a', '"a"', 'ex', 0.5);
     })
   })
+
+  describe('set', () => {
+    it('should allow for a custom timeout', async () => {
+      const cache = new TagCache({
+        defaultTimeout: 86400,
+      });
+      // NOTE: ioredis-mock doesn't expire setex's yet, see stipsan/ioredis-mock#361
+      // When it does replace the test with:
+      // await cache.set('a', 'a', ['a'], { timeout: 0.5 });
+      // await new Promise(res => setTimeout(res, 1000));
+      // expect(await cache.get('a')).toEqual(null);
+      const set = jest.fn();
+      cache.redis.multi = jest.fn(() => ({
+        sadd: jest.fn(),
+        set,
+        exec: jest.fn()
+      }))
+      await cache.set('a', 'a', ['a'], { timeout: 0.5 });
+      expect(cache.redis.multi).toHaveBeenCalledTimes(1);
+      expect(set).toHaveBeenCalledTimes(1);
+      expect(set).toHaveBeenCalledWith('data:a', '"a"', 'ex', 0.5);
+    })
+  })
 })
