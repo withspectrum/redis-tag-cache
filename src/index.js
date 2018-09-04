@@ -26,11 +26,13 @@ class TagCache {
     this.options = options;
   }
 
-  get = async (key: string): Promise<?CacheData> => {
+  get = async (...keys: Array<string>): Promise<?CacheData> => {
     try {
-      return this.redis.get(`data:${key}`).then(res => {
+      return this.redis.mget(keys.map(key => `data:${key}`)).then(res => {
         try {
-          return JSON.parse(res);
+          // Special case for single element gets
+          if (res.length === 1) return JSON.parse(res[0]);
+          return res.map(elem => JSON.parse(elem));
         } catch (err) {
           return res;
         }

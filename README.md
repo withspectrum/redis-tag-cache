@@ -111,12 +111,12 @@ cache.set('some-key', 'some-value', ['some-tag'], { timeout: 123, })cache
   .then(() => console.log('Stored successfully!'))
 ```
 
-### cache.get(key)
+### cache.get(...keys)
 
-Get a record from the cache. Usage:
+Get records from the cache. Usage:
 
 ```JS
-cache.get(key: string): Promise<?value>
+cache.get(...keys: Array<string>): Promise<Array<?value> | ?value>
 ```
 
 #### Example
@@ -127,6 +127,9 @@ cache.get('existing-key')
 
 cache.get('not-existing-key')
   .then(data => console.log('data is null', data === null));
+
+cache.get('key-1', 'key-2')
+  .then(data => console.log('got multiple keys', data[0], data[1]));
 ```
 
 ### cache.invalidate(...tags)
