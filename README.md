@@ -152,6 +152,26 @@ cache.invalidate(['some-tag', 'some-other-tag'])
   .then(() => console.log('Tags invalidated successfully!'))
 ```
 
+## Under the hood
+
+Under the hood we store one set for each tag with all its associated keys and your data as a separate record. For example:
+
+```JS
+cache.set('some-key', 'some-value', ['some-tag']);
+cache.set('some-other-key', 'some-other-value', ['some-tag', 'some-other-tag'];
+```
+
+With these two `.set` calls you'd end up with these records stored in Redis:
+
+- `data:some-key = "some-value"`
+- `data:some-other-key = "some-other-value"`
+- `tags:some-tag = ["some-key", "some-other-key"]`
+- `tags:some-other-tag = ["some-other-key"]`
+
+The tradeoff chosen is to keep `.get` as fast as possible (it's a single `redis.get(key)`, so it couldn't be faster), while making `.set` a bit slower (since we have to do multiple `redis.set`s, one for each tags) and `.invalidate` slow. (since we have to do a `redis.get` per tag and then a `redis.del` per record in the tags lists)
+
+PRs implementing this differently under the hood to make `.set` and/or `.invalidate` quicker while keeping `.get` as fast as it is would be appreciated!
+
 ## License
 
 Licensed under the MIT License, Copyright ©️ 2018 Maximilian Stoiber. See [LICENSE.md](LICENSE.md) for more information.
