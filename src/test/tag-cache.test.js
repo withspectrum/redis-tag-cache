@@ -4,7 +4,7 @@ import TagCache from '../';
 
 // Use an ioredis mock
 jest.mock('ioredis');
-ioredis.mockImplementation(() => new ioredismock())
+ioredis.mockImplementation(() => new ioredismock());
 
 it('should have get, set and invalidate', () => {
   const cache = new TagCache();
@@ -23,7 +23,7 @@ it('should invalidate an item with a tag', async () => {
   const cache = new TagCache();
   await cache.set('a', 'data', ['tag-1']);
   expect(await cache.get('a')).toEqual('data');
-  await cache.invalidate(['tag-1']);
+  await cache.invalidate('tag-1');
   expect(await cache.get('a')).toEqual(null);
 });
 
@@ -32,10 +32,21 @@ it('should invalidate multiple items with the same tag', async () => {
   await cache.set('a', 'data', ['tag-1', 'tag-2']);
   await cache.set('b', 'data', ['tag-2', 'tag-3']);
   await cache.set('c', 'data', ['tag-3', 'tag-4']);
-  await cache.invalidate(['tag-2']);
+  await cache.invalidate('tag-2');
   expect(await cache.get('a')).toEqual(null);
   expect(await cache.get('b')).toEqual(null);
   expect(await cache.get('c')).toEqual('data');
+});
+
+it('should invalidate multiple tags', async () => {
+  const cache = new TagCache();
+  await cache.set('a', 'data', ['tag-1', 'tag-2']);
+  await cache.set('b', 'data', ['tag-2', 'tag-3']);
+  await cache.set('c', 'data', ['tag-3', 'tag-4']);
+  await cache.invalidate('tag-2', 'tag-3');
+  expect(await cache.get('a')).toEqual(null);
+  expect(await cache.get('b')).toEqual(null);
+  expect(await cache.get('c')).toEqual(null);
 });
 
 describe('data types', () => {
@@ -76,14 +87,14 @@ describe('options', () => {
       cache.redis.multi = jest.fn(() => ({
         sadd: jest.fn(),
         set,
-        exec: jest.fn()
-      }))
+        exec: jest.fn(),
+      }));
       await cache.set('a', 'a', ['a']);
       expect(cache.redis.multi).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledWith('data:a', '"a"', 'ex', 0.5);
-    })
-  })
+    });
+  });
 
   describe('set', () => {
     it('should allow for a custom timeout', async () => {
@@ -99,12 +110,12 @@ describe('options', () => {
       cache.redis.multi = jest.fn(() => ({
         sadd: jest.fn(),
         set,
-        exec: jest.fn()
-      }))
+        exec: jest.fn(),
+      }));
       await cache.set('a', 'a', ['a'], { timeout: 0.5 });
       expect(cache.redis.multi).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledWith('data:a', '"a"', 'ex', 0.5);
-    })
-  })
-})
+    });
+  });
+});

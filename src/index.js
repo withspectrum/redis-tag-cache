@@ -44,7 +44,7 @@ class TagCache {
     data: CacheData,
     tags: Array<string>,
     options?: {
-      timeout?: number
+      timeout?: number,
     } = {}
   ): Promise<void> => {
     try {
@@ -57,7 +57,8 @@ class TagCache {
         multi.sadd(`tags:${tag}`, key);
       });
 
-      const timeout = (options && options.timeout) || this.options.defaultTimeout;
+      const timeout =
+        (options && options.timeout) || this.options.defaultTimeout;
       // Add the data to the key
       if (typeof timeout === 'number') {
         multi.set(`data:${key}`, JSON.stringify(data), 'ex', timeout);
@@ -75,7 +76,7 @@ class TagCache {
   // 1. Get all the keys associated with all the passed-in tags (tags:${tag})
   // 2. Delete all the keys data (data:${key})
   // 3. Delete all the tags (tags:${tag})
-  invalidate = async (tags: Array<string>): Promise<void> => {
+  invalidate = async (...tags: Array<string>): Promise<void> => {
     try {
       // NOTE(@mxstbr): [].concat.apply([],...) flattens the array
       const keys = [].concat.apply(

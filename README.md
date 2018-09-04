@@ -54,7 +54,7 @@ console.log(await cache.get('post:id-234')) // => { id: 'id-234', title: 'Hello 
  */
 
 // Invalidate all records tagged with `user-123`
-await cache.invalidate(['user-123']);
+await cache.invalidate('user-123');
 console.log(await cache.get('post:id-123')) // => null
 console.log(await cache.get('post:id-234')) // => null
 // The third post not tagged with `user-123` is still around!
@@ -142,13 +142,13 @@ cache.get('not-existing-key')
 Invalidate a set of tags and any records associated with them. Usage:
 
 ```JS
-cache.invalidate(tags: Array<string>): Promise<void>
+cache.invalidate(tag1: string, tag2: string, ...): Promise<void>
 ```
 
 #### Example
 
 ```JS
-cache.invalidate(['some-tag', 'some-other-tag'])
+cache.invalidate('some-tag', 'some-other-tag')
   .then(() => console.log('Tags invalidated successfully!'))
 ```
 
