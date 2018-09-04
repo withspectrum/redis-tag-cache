@@ -42,7 +42,10 @@ class TagCache {
   set = async (
     key: string,
     data: CacheData,
-    tags: Array<string>
+    tags: Array<string>,
+    options?: {
+      timeout?: number
+    } = {}
   ): Promise<void> => {
     try {
       // NOTE(@mxstbr): This is a multi execution because if any of the commands is invalid
@@ -54,9 +57,10 @@ class TagCache {
         multi.sadd(`tags:${tag}`, key);
       });
 
+      const timeout = (options && options.timeout) || this.options.defaultTimeout;
       // Add the data to the key
-      if (typeof this.options.defaultTimeout === 'number') {
-        multi.set(`data:${key}`, JSON.stringify(data), 'ex', this.options.defaultTimeout);
+      if (typeof timeout === 'number') {
+        multi.set(`data:${key}`, JSON.stringify(data), 'ex', timeout);
       } else {
         multi.set(`data:${key}`, JSON.stringify(data));
       }
