@@ -14,15 +14,16 @@ export type CacheData = ?mixed;
 
 export type Options = {
   defaultTimeout?: number,
+  redis?: RedisOptions,
 };
 
 class TagCache {
   redis: Redis;
   options: Options;
 
-  constructor(options?: Options = {}, ioredisOptions?: RedisOptions = {}) {
-    this.redis = new Redis(ioredisOptions);
-    this.options = options || {};
+  constructor(options?: Options = {}) {
+    this.redis = new Redis(options.redis || {});
+    this.options = options;
   }
 
   get = async (key: string): Promise<?CacheData> => {

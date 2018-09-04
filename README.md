@@ -74,36 +74,28 @@ const cache = new TagCache(options, ioredisOptions);
 Options can be an object containing any of the following keys:
 
 - `defaultTimeout`: number of seconds until records expire even if not invalidated
+- `ioredis`: any [`ioredis` option](https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options), this object is directly passed through to `new Redis(ioredisOptions)`
 
 Example:
 
 ```JS
 const cache = new TagCache({
   defaultTimeout: 86400,
+  ioredis: {
+    keyPrefix: 'my-cache', // Recommended: set a keyprefix for all keys stored via the cache
+    port: 6379,
+    host: 'redis-service.com',
+    password: 'password',
+  }
 });
 ```
 
-#### `ioredisOptions`
-
-Any [`ioredis` option](https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options), this object is directly passed through to `new Redis(ioredisOptions)`.
-
-Example:
-
-```JS
-const cache = new TagCache(options, {
-  keyPrefix: 'my-cache', // Recommended: set a keyprefix for all keys stored via the cache
-  port: 6379,
-  host: 'redis-service.com',
-  password: 'password',
-});
-```
-
-### cache.set
+### cache.set(key, value, tags)
 
 Store a record in Redis. Usage:
 
 ```JS
-cache.set(key: string, data: any, tags: Array<string>, options?: Object): Promise<void>
+cache.set(key: string, value: any, tags: Array<string>, options?: Object): Promise<void>
 ```
 
 #### `options`
@@ -119,12 +111,12 @@ cache.set('some-key', 'some-value', ['some-tag'], { timeout: 123, })cache
   .then(() => console.log('Stored successfully!'))
 ```
 
-### cache.get
+### cache.get(key)
 
 Get a record from the cache. Usage:
 
 ```JS
-cache.get(key: string): Promise<?data>
+cache.get(key: string): Promise<?value>
 ```
 
 #### Example
@@ -137,7 +129,7 @@ cache.get('not-existing-key')
   .then(data => console.log('data is null', data === null));
 ```
 
-### cache.invalidate
+### cache.invalidate(...tags)
 
 Invalidate a set of tags and any records associated with them. Usage:
 

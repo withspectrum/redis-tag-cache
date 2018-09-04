@@ -4,7 +4,10 @@ import TagCache from '../';
 
 // Use an ioredis mock
 jest.mock('ioredis');
-ioredis.mockImplementation(() => new ioredismock());
+
+beforeEach(() => {
+  ioredis.mockImplementation(() => new ioredismock());
+});
 
 it('should have get, set and invalidate', () => {
   const cache = new TagCache();
@@ -99,6 +102,23 @@ describe('options', () => {
       expect(cache.redis.multi).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledWith('data:a', '"a"', 'ex', 0.5);
+    });
+  });
+
+  describe('redis', () => {
+    it('should set the redis options', async () => {
+      const redis = jest.fn();
+      ioredis.mockImplementation(redis);
+      const cache = new TagCache({
+        defaultTimeout: 0.5,
+        redis: {
+          keyPrefix: 'asdf',
+        },
+      });
+      expect(redis).toHaveBeenCalledTimes(1);
+      expect(redis).toHaveBeenCalledWith({
+        keyPrefix: 'asdf',
+      });
     });
   });
 
