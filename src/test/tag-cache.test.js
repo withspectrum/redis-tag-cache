@@ -29,6 +29,13 @@ it('should get multiple items', async () => {
   expect(await cache.get('a', 'b')).toEqual(['data-a', 'data-b']);
 });
 
+it('should get multiple items with some being null', async () => {
+  const cache = new TagCache();
+  await cache.set('a', 'data-a', ['some-tag']);
+  await cache.set('c', 'data-c', ['some-tag']);
+  expect(await cache.get('a', 'b', 'c')).toEqual(['data-a', null, 'data-c']);
+});
+
 it('should invalidate an item with a tag', async () => {
   const cache = new TagCache();
   await cache.set('a', 'data', ['tag-1']);
