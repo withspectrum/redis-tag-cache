@@ -1,6 +1,6 @@
 {
   "name": "redis-tag-cache",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Cache and invalidate records in Redis with tags.",
   "repository": {
     "type": "git",
