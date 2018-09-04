@@ -98,7 +98,7 @@ const cache = new TagCache(options, {
 });
 ```
 
-### `cache.set`
+### cache.set
 
 Store a record in Redis. Usage:
 
@@ -119,7 +119,7 @@ cache.set('some-key', 'some-value', ['some-tag'], { timeout: 123, })cache
   .then(() => console.log('Stored successfully!'))
 ```
 
-### `cache.get`
+### cache.get
 
 Get a record from the cache. Usage:
 
@@ -137,7 +137,7 @@ cache.get('not-existing-key')
   .then(data => console.log('data is null', data === null));
 ```
 
-### `cache.invalidate`
+### cache.invalidate
 
 Invalidate a set of tags and any records associated with them. Usage:
 
