@@ -66,7 +66,7 @@ console.log(await cache.get('post:id-345')) // => { id: 'id-345', title: 'Hello 
 ### Base class
 
 ```JS
-const cache = new TagCache(options, ioredisOptions);
+const cache = new TagCache(options);
 ```
 
 #### `options`
@@ -74,14 +74,14 @@ const cache = new TagCache(options, ioredisOptions);
 Options can be an object containing any of the following keys:
 
 - `defaultTimeout`: number of seconds until records expire even if not invalidated
-- `ioredis`: any [`ioredis` option](https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options), this object is directly passed through to `new Redis(ioredisOptions)`
+- `redis`: any [`ioredis` option](https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options), this object is directly passed through to `new Redis(ioredisOptions)`
 
 Example:
 
 ```JS
 const cache = new TagCache({
   defaultTimeout: 86400,
-  ioredis: {
+  redis: {
     keyPrefix: 'my-cache', // Recommended: set a keyprefix for all keys stored via the cache
     port: 6379,
     host: 'redis-service.com',
